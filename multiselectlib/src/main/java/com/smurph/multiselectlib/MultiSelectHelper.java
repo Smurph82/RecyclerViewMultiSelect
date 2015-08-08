@@ -86,7 +86,7 @@ public class MultiSelectHelper implements
     public void clearSelected() { mIsSelected.clear(); }
 
     @NonNull
-    public List<Integer> getSelectedPosition() {
+    public List<Integer> getSelectedPositions() {
         List<Integer> list = new ArrayList<>(mIsSelected.size());
         for (int i=0,c=mIsSelected.size();i<c;i++) { list.add(mIsSelected.keyAt(i)); }
         return list;
