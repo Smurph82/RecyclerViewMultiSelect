@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,6 @@ import android.util.TypedValue;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Ben Murphy on 8/6/2015.
@@ -28,6 +28,9 @@ public class MultiSelectHelper implements
         View.OnClickListener, View.OnLongClickListener {
 
     protected SparseBooleanArray mIsSelected = new SparseBooleanArray();
+
+    public static final String SAVE_KEY_SELECTED_POSITIONS =
+            "com.smurph.multiselectlib.SAVED_POSITIONS";
 
     private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback;
@@ -86,10 +89,24 @@ public class MultiSelectHelper implements
     public void clearSelected() { mIsSelected.clear(); }
 
     @NonNull
-    public List<Integer> getSelectedPositions() {
-        List<Integer> list = new ArrayList<>(mIsSelected.size());
+    public ArrayList<Integer> getSelectedPositions() {
+        ArrayList<Integer> list = new ArrayList<>(mIsSelected.size());
         for (int i=0,c=mIsSelected.size();i<c;i++) { list.add(mIsSelected.keyAt(i)); }
         return list;
+    }
+
+    public void saveSelectedPositions(@NonNull Bundle bundle) {
+        bundle.putIntegerArrayList(SAVE_KEY_SELECTED_POSITIONS, getSelectedPositions());
+    }
+
+    public void restoreSelectedPositions(@NonNull Context context, @NonNull Bundle bundle) {
+        ArrayList<Integer> list = bundle.getIntegerArrayList(SAVE_KEY_SELECTED_POSITIONS);
+
+        if (list==null) { return; }
+
+        for (Integer i : list) { mIsSelected.put(i, true); }
+
+        if (isSelectionMode()) { startActionMode(context); }
     }
 
     @Override
@@ -109,14 +126,18 @@ public class MultiSelectHelper implements
         Integer position = (Integer) v.getTag(TAG_ID);
         if (mActionMode != null || position == null) { return false; }
 
-        if (v.getContext() instanceof AppCompatActivity) {
-            mActionMode = ((AppCompatActivity) v.getContext())
-                    .startSupportActionMode(mActionModeCallback);
-        }
+        startActionMode(v.getContext());
 
         toggleSelection(position);
 
         return mListener != null && mListener.onLongClick(v);
+    }
+
+    private void startActionMode(@NonNull Context context) {
+        if (context instanceof AppCompatActivity) {
+            mActionMode = ((AppCompatActivity) context)
+                    .startSupportActionMode(mActionModeCallback);
+        }
     }
 
     public void toggleSelection(int position) {
