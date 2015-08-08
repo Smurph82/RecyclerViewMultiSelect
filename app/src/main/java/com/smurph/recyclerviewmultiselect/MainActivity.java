@@ -3,6 +3,7 @@ package com.smurph.recyclerviewmultiselect;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -36,18 +37,28 @@ public class MainActivity extends AppCompatActivity {
         for (int i=0;i<25;i++) { mList.add(Integer.toString(i + 1)); }
     }
 
+    private RecyclerView mRecyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupRecyclerView((RecyclerView) findViewById(R.id.recyclerview));
+        setupRecyclerView(R.id.recyclerview, savedInstanceState);
     }
 
-    private void setupRecyclerView(RecyclerView recyclerView) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.hasFixedSize();
-        recyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, mList));
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter()).saveSelectedItems(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    private void setupRecyclerView(@IdRes int id, @Nullable Bundle bundle) {
+        mRecyclerView = (RecyclerView) findViewById(id);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.hasFixedSize();
+        mRecyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, mList));
+        ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter()).restoreSelectedItems(bundle);
     }
 
     public class SimpleStringRecyclerViewAdapter
@@ -62,11 +73,22 @@ public class MainActivity extends AppCompatActivity {
         public SimpleStringRecyclerViewAdapter(@NonNull Context context,
                                                @Nullable List<String> items) {
             mHelper = new MultiSelectHelper(context, R.id.tag_position);
+            mHelper.setActionModeCallback(mActionModeCallback);
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground,
                     mTypedValue, true);
             mBackground = mTypedValue.resourceId;
             mSelectedColor = context.getResources().getColor(R.color.theme_accent);
             mValues = items;
+        }
+
+        public void saveSelectedItems(@NonNull Bundle bundle) {
+            mHelper.saveSelectedPositions(bundle);
+        }
+
+        public void restoreSelectedItems(@Nullable Bundle bundle) {
+            if (bundle==null) { return; }
+
+            mHelper.restoreSelectedPositions(MainActivity.this, bundle);
         }
 
         @Override
@@ -78,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
 //            v.setOnLongClickListener(mHelper);
             mHelper.setView(v);
             mHelper.setOnMultiSelectListener(mListener);
-            mHelper.setActionModeCallback(mActionModeCallback);
             return new ViewHolder(v);
         }
 
@@ -150,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.action_delete:
                         Toast.makeText(MainActivity.this, "Delete these.", Toast.LENGTH_SHORT).show();
-                        List<Integer> list = mHelper.getSelectedPosition();
+                        List<Integer> list = mHelper.getSelectedPositions();
                         for (Integer i : list) { notifyItemChanged(i); }
                         mode.finish();
                         return true;
