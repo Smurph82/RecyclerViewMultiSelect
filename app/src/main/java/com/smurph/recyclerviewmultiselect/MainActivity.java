@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         private final TypedValue mTypedValue = new TypedValue();
         private int mBackground;
         private List<String> mValues;
-        protected int mSelectedColor;
         public MultiSelectHelper mHelper;
 
         public SimpleStringRecyclerViewAdapter(@NonNull Context context,
@@ -77,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground,
                     mTypedValue, true);
             mBackground = mTypedValue.resourceId;
-            mSelectedColor = context.getResources().getColor(R.color.theme_accent);
             mValues = items;
         }
 
