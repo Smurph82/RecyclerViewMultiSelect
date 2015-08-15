@@ -9,6 +9,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +38,7 @@ public class MultiSelectHelper implements
     private ActionMode.Callback mActionModeCallback;
 
     private final int TAG_ID;
-    private final int ACCENT_COLOR;
+    private int ACCENT_COLOR;
     private final ColorStateList COLOR_STATE_LIST;
 
     public interface OnMultiSelectListener {
@@ -150,6 +152,21 @@ public class MultiSelectHelper implements
     public boolean isSelectionMode() { return mIsSelected.size()>0; }
 
     public boolean getIsSelected(int position) { return mIsSelected.get(position, false); }
+
+    public void setSelectedColor(int color) { ACCENT_COLOR = color; }
+
+    public void setSelectedColor(@NonNull Context context, @ColorRes int id) {
+        setSelectedColor(context.getResources().getColor(id));
+    }
+
+    public void setSeletedColor(@ColorInt int color) {
+        setSelectedColor(Color.argb(
+                (color >>> 24), // Alpha
+                ((color >> 16) & 0xFF), // Red
+                ((color >> 8) & 0xFF), // Green
+                (color & 0xFF) //Blue
+        ));
+    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setRippleColor(@NonNull View v) {
