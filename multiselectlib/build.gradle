@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group = 'com.smurph.multiselectlib'
-version = '1.0.1'
+version = '1.0.2'
 def siteUrl = 'https://github.com/Smurph82/RecyclerViewMultiSelect'      // Homepage URL of the library
 def gitUrl = 'https://github.com/Smurph82/RecyclerViewMultiSelect.git'   // Git repository URL
 
@@ -58,7 +58,7 @@ bintray {
 //            desc = 'RecyclerView MultiSelect release 1.0.0'
 //            released  = new Date()
 //            vcsTag = '1.0.0'
-//            attributes = ['gradle-plugin': 'com.smurph.multiselectlib:recyclerview-multiselect:1.0.0']
+//            attributes = ['gradle-plugin': 'com.smurph.multiselectlib:multiselectlib:1.0.2']
 //        }
     }
 }
