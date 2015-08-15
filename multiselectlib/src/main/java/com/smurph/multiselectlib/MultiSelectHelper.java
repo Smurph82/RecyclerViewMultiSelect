@@ -50,7 +50,6 @@ public class MultiSelectHelper implements
 
     public MultiSelectHelper(@NonNull Context context, @IdRes int tagId) {
         TypedValue typedValue = new TypedValue();
-
         TypedArray a = context.obtainStyledAttributes(typedValue.data,
                 new int[]{R.attr.colorAccent, R.attr.selectedItemColor});
         ACCENT_COLOR = a.getColor(1, a.getColor(0, Color.rgb(255, 209, 128)));
@@ -159,14 +158,14 @@ public class MultiSelectHelper implements
         setSelectedColor(context.getResources().getColor(id));
     }
 
-    public void setSeletedColor(@ColorInt int color) {
-        setSelectedColor(Color.argb(
-                (color >>> 24), // Alpha
-                ((color >> 16) & 0xFF), // Red
-                ((color >> 8) & 0xFF), // Green
-                (color & 0xFF) //Blue
-        ));
-    }
+//    public void setSelectedColorARGD(@ColorInt int color) {
+//        setSelectedColor(Color.argb(
+//                (color >>> 24), // Alpha
+//                ((color >> 16) & 0xFF), // Red
+//                ((color >> 8) & 0xFF), // Green
+//                (color & 0xFF) //Blue
+//        ));
+//    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setRippleColor(@NonNull View v) {
