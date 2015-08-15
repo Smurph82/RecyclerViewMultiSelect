@@ -9,5 +9,6 @@
     <color name="theme_text_primary">#FFF8E1</color> <!-- 50 -->
     <color name="window_background">#FFF5F5F5</color>
     <color name="theme_action_text_icon">#FFF</color>
+    <color name="theme_cyan">#84FFFF</color> <!-- A 100 -->
 
 </resources>
