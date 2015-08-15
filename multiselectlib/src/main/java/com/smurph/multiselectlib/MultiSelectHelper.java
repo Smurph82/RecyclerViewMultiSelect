@@ -50,8 +50,8 @@ public class MultiSelectHelper implements
         TypedValue typedValue = new TypedValue();
 
         TypedArray a = context.obtainStyledAttributes(typedValue.data,
-                new int[]{R.attr.colorAccent});
-        ACCENT_COLOR = a.getColor(0, 0);
+                new int[]{R.attr.colorAccent, R.attr.selectedItemColor});
+        ACCENT_COLOR = a.getColor(1, a.getColor(0, Color.rgb(255, 209, 128)));
         a.recycle();
 
         int accent_color_alt = changeBrightness(ACCENT_COLOR, 0.5f);
