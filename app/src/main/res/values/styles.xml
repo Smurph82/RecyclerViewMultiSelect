@@ -10,6 +10,7 @@
         <item name="actionModeStyle">@style/Theme.ActionMode</item>
         <item name="actionMenuTextColor">@android:color/white</item>
         <item name="actionModeCloseDrawable">@drawable/ic_arrow_back</item>
+        <!--<item name="selectedItemColor">#f00</item>-->
     </style>
 
     <style name="Theme.MultiSelector" parent="Base.Theme.MultiSelector"/>
