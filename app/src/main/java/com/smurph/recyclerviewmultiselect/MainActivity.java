@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                                                @Nullable List<String> items) {
             mHelper = new MultiSelectHelper(context, R.id.tag_position);
             mHelper.setActionModeCallback(mActionModeCallback);
+//            Examples to show setting selected color at runtime.
+//            mHelper.setSelectedColor(Color.CYAN);
+//            mHelper.setSelectedColor(MainActivity.this, R.color.theme_cyan);
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground,
                     mTypedValue, true);
             mBackground = mTypedValue.resourceId;
