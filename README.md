@@ -8,3 +8,7 @@ dependencies {
     compile 'com.smurph.multiselectlib:multiselectlib:1.0.1'
 }
 ```
+##### COMING SOON
+* MultiSelect w/o CAB.
+* Single select mode w/ CAB.
+* Single select mode w/o.
