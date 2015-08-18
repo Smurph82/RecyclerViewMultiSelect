@@ -3,9 +3,11 @@ package com.smurph.recyclerviewmultiselect;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeLayout;
+
+    // Default ActionBar height 52
+    protected static final int SWIPE_PROGRESS_VIEW_OFFSET_DEFAULT = 62;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupRecyclerView(R.id.recyclerview, savedInstanceState);
+        setupSwipeRefreshLayout();
     }
 
     @Override
@@ -59,6 +66,56 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.hasFixedSize();
         mRecyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, mList));
         ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter()).restoreSelectedItems(bundle);
+    }
+
+
+    protected void onSwipeLayoutRefresh() {
+        ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter()).setIsClickingEnabled(false);
+        Toast.makeText(this,
+                "Clicking disabled while something processes.", Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
+                        .setIsClickingEnabled(true);
+                setRefreshing(false);
+            }
+        }, 5000L);
+    }
+
+    protected void setRefreshing(boolean refreshing) {
+        if (mSwipeLayout!=null) {  mSwipeLayout.setRefreshing(refreshing); }
+    }
+
+    protected @NonNull int[] setSwipeRefreshColorSchemeResources() {
+        return new int[] { R.color.theme_primary_light, R.color.theme_primary,
+                R.color.theme_primary_dark, R.color.theme_accent_dark };
+    }
+
+    protected void setSwipeRefreshOffset(int pixels) {
+        if (mSwipeLayout==null) { return;
+        }
+
+        mSwipeLayout.setProgressViewOffset(false, 0, pixels);
+    }
+
+    private void setupSwipeRefreshLayout() {
+        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        if (mSwipeLayout != null) {
+            mSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    onSwipeLayoutRefresh();
+                }
+            });
+//            setSwipeRefreshOffset(dipsToPix(SWIPE_PROGRESS_VIEW_OFFSET_DEFAULT));
+            mSwipeLayout.setColorSchemeResources(setSwipeRefreshColorSchemeResources());
+        }
+    }
+
+    protected int dipsToPix(float dps) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps,
+                getResources().getDisplayMetrics());
     }
 
     public class SimpleStringRecyclerViewAdapter
@@ -129,6 +186,10 @@ public class MainActivity extends AppCompatActivity {
                 super(v);
                 mTxtView = (TextView) v.findViewById(android.R.id.text1);
             }
+        }
+
+        public void setIsClickingEnabled(boolean isEnabled) {
+            mHelper.setIsClickingEnabled(isEnabled);
         }
 
         private MultiSelectHelper.OnMultiSelectListener mListener =
