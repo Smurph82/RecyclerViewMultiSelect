@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -154,8 +153,13 @@ public class MultiSelectHelper implements
 
     public void setSelectedColor(int color) { ACCENT_COLOR = color; }
 
+    @TargetApi(Build.VERSION_CODES.M)
     public void setSelectedColor(@NonNull Context context, @ColorRes int id) {
-        setSelectedColor(context.getResources().getColor(id));
+        if (isAboveOrEqualAPILvl(Build.VERSION_CODES.M)) {
+            setSelectedColor(context.getColor(id));
+        } else {
+            setSelectedColor(context.getResources().getColor(id));
+        }
     }
 
 //    public void setSelectedColorARGD(@ColorInt int color) {
@@ -169,7 +173,7 @@ public class MultiSelectHelper implements
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setRippleColor(@NonNull View v) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (isAboveOrEqualAPILvl(Build.VERSION_CODES.LOLLIPOP)) {
             v.setBackground(new RippleDrawable(COLOR_STATE_LIST,
                     new ColorDrawable(ACCENT_COLOR), null));
         } else {
@@ -216,5 +220,7 @@ public class MultiSelectHelper implements
     private int lighten(final int color, float fraction) {
         return blendColors(Color.WHITE, color, fraction);
     }
+
+    private boolean isAboveOrEqualAPILvl(int apiLvl) { return Build.VERSION.SDK_INT >= apiLvl; }
 
 }
