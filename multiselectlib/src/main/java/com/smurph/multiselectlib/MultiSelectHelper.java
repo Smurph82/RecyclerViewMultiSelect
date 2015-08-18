@@ -153,11 +153,13 @@ public class MultiSelectHelper implements
 
     public void setSelectedColor(int color) { ACCENT_COLOR = color; }
 
+    @SuppressWarnings("unused")
     @TargetApi(Build.VERSION_CODES.M)
     public void setSelectedColor(@NonNull Context context, @ColorRes int id) {
         if (isAboveOrEqualAPILvl(Build.VERSION_CODES.M)) {
             setSelectedColor(context.getColor(id));
         } else {
+            //noinspection deprecation
             setSelectedColor(context.getResources().getColor(id));
         }
     }
