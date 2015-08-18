@@ -40,6 +40,8 @@ public class MultiSelectHelper implements
     private int ACCENT_COLOR;
     private final ColorStateList COLOR_STATE_LIST;
 
+    private boolean mIsClickingEnabled = true;
+
     public interface OnMultiSelectListener {
         void onClick(View v, boolean isSelectionMode);
         boolean onLongClick(View v);
@@ -111,6 +113,8 @@ public class MultiSelectHelper implements
 
     @Override
     public void onClick(View v) {
+        if (!mIsClickingEnabled) { return; }
+
         Integer position = (Integer) v.getTag(TAG_ID);
         if (isSelectionMode() && position!=null) {
             if (mListener!=null) { mListener.onClick(v, isSelectionMode()); }
@@ -123,6 +127,8 @@ public class MultiSelectHelper implements
 
     @Override
     public boolean onLongClick(View v) {
+        if (!mIsClickingEnabled) { return true; }
+
         Integer position = (Integer) v.getTag(TAG_ID);
         if (mActionMode != null || position == null) { return false; }
 
@@ -145,6 +151,10 @@ public class MultiSelectHelper implements
         else { mIsSelected.put(position, true); }
 
         if (mListener!=null) { mListener.itemChangedAt(position); }
+    }
+
+    public void setIsClickingEnabled(boolean isClickingEnabled) {
+        mIsClickingEnabled = isClickingEnabled;
     }
 
     public boolean isSelectionMode() { return mIsSelected.size()>0; }
