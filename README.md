@@ -8,6 +8,9 @@ dependencies {
     compile 'com.smurph.multiselectlib:multiselectlib:1.0.1'
 }
 ```
+##### REQUEST
+* Request for custom RecyclerView Adapter that handles most of the setup for you
+
 ##### COMING SOON
 * MultiSelect w/o CAB.
 * Single select mode w/ CAB.
