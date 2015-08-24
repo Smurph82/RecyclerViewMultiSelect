@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -41,6 +42,10 @@ public class MultiSelectHelper implements
     private final ColorStateList COLOR_STATE_LIST;
 
     private boolean mIsClickingEnabled = true;
+    private boolean mIsActionModeEnabled = true;
+    private boolean mIsSingleSelectMode = false;
+
+    private int mSelectedPosition = -1;
 
     public interface OnMultiSelectListener {
         void onClick(View v, boolean isSelectionMode);
@@ -116,8 +121,14 @@ public class MultiSelectHelper implements
         if (!mIsClickingEnabled) { return; }
 
         Integer position = (Integer) v.getTag(TAG_ID);
-        if (isSelectionMode() && position!=null) {
+        if ((isSelectionMode() || !isActionModeEnabled()) && position!=null) {
             if (mListener!=null) { mListener.onClick(v, isSelectionMode()); }
+            if (isSingleSelectMode()) {
+                if (mSelectedPosition !=-1) {
+                    toggleSelection(mSelectedPosition);
+                }
+                mSelectedPosition = position;
+            }
             toggleSelection(position);
             if (!isSelectionMode() && mActionMode!=null) { mActionMode.finish(); }
             return;
@@ -130,9 +141,15 @@ public class MultiSelectHelper implements
         if (!mIsClickingEnabled) { return true; }
 
         Integer position = (Integer) v.getTag(TAG_ID);
+        if (isSingleSelectMode()) {
+            if (mSelectedPosition !=-1) {
+                toggleSelection(mSelectedPosition);
+            }
+            mSelectedPosition = position;
+        }
         if (mActionMode != null || position == null) { return false; }
 
-        startActionMode(v.getContext());
+        if (mIsActionModeEnabled) { startActionMode(v.getContext()); }
 
         toggleSelection(position);
 
@@ -147,8 +164,16 @@ public class MultiSelectHelper implements
     }
 
     public void toggleSelection(int position) {
-        if (mIsSelected.get(position, false)) { mIsSelected.delete(position); }
-        else { mIsSelected.put(position, true); }
+        if (!mIsSingleSelectMode) {
+            if (mIsSelected.get(position, false)) {
+                mIsSelected.delete(position);
+            } else {
+                mIsSelected.put(position, true);
+            }
+        } else {
+            mIsSelected.clear();
+            mIsSelected.put(position, true);
+        }
 
         if (mListener!=null) { mListener.itemChangedAt(position); }
     }
@@ -157,11 +182,28 @@ public class MultiSelectHelper implements
         mIsClickingEnabled = isClickingEnabled;
     }
 
+    public MultiSelectHelper setActionModeEnabled(boolean isEnabled) {
+        mIsActionModeEnabled = isEnabled;
+        return this;
+    }
+
+    public boolean isActionModeEnabled() { return mIsActionModeEnabled; }
+
     public boolean isSelectionMode() { return mIsSelected.size()>0; }
 
     public boolean getIsSelected(int position) { return mIsSelected.get(position, false); }
 
-    public void setSelectedColor(int color) { ACCENT_COLOR = color; }
+    public MultiSelectHelper setSelectedColor(@ColorInt int color) {
+        ACCENT_COLOR = color;
+        return this;
+    }
+
+    public boolean isSingleSelectMode() { return mIsSingleSelectMode; }
+
+    public MultiSelectHelper setSingleSelectMode(boolean isSingleSelectMode) {
+        mIsSingleSelectMode = isSingleSelectMode;
+        return this;
+    }
 
     @SuppressWarnings("unused")
     @TargetApi(Build.VERSION_CODES.M)
@@ -234,5 +276,37 @@ public class MultiSelectHelper implements
     }
 
     private boolean isAboveOrEqualAPILvl(int apiLvl) { return Build.VERSION.SDK_INT >= apiLvl; }
+
+//    public static class Builder {
+//        private Context lContext;
+//        private int lTagId;
+//        private boolean lIsActionModeEnabled = true;
+//        private boolean lIsSingleSelectMode = false;
+//
+//        public Builder(@NonNull Context context, @IdRes int tagId) {
+//            lContext = context;
+//            lTagId = tagId;
+//        }
+//
+//        public Builder setIsActionModeEnabled(boolean isEnabled) {
+//            lIsActionModeEnabled = isEnabled;
+//            return this;
+//        }
+//
+//        public Builder setIsSingleSelectMode(boolean isEnabled) {
+//            lIsSingleSelectMode = isEnabled;
+//            return this;
+//        }
+//
+//        public Builder setAccentColor() {
+//
+//        }
+//
+//        public MultiSelectHelper create() {
+//            return new MultiSelectHelper(lContext, lTagId)
+//                    .setActionModeEnabled(lIsActionModeEnabled)
+//                    .setSingleSelectMode(lIsSingleSelectMode);
+//        }
+//    }
 
 }
