@@ -5,13 +5,13 @@ Add to Android Studio project
 ```
 dependencies {
     ...
-    compile 'com.smurph.multiselectlib:multiselectlib:1.0.1'
+    compile 'com.smurph.multiselectlib:multiselectlib:1.0.4'
 }
 ```
-##### REQUEST
-* Request for custom RecyclerView Adapter that handles most of the setup for you
 
 ##### COMING SOON
-* MultiSelect w/o CAB.
-* Single select mode w/ CAB.
-* Single select mode w/o.
+* New demo app showing all the features and examples.
+* Custom RecyclerView Adapter class to implement some of the function for the end developer.
+* ~~MultiSelect w/o CAB.~~
+* ~~Single select mode w/ CAB.~~
+* ~~Single select mode w/o.~~
