@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RecyclerViewMultiSelect</string>
     <string name="action_delete">Delete</string>
+    <string name="action_show_selected">Show selected</string>
 </resources>
