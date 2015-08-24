@@ -14,4 +14,4 @@ dependencies {
 * Custom RecyclerView Adapter class to implement some of the function for the end developer.
 * ~~MultiSelect w/o CAB.~~
 * ~~Single select mode w/ CAB.~~
-* ~~Single select mode w/o.~~
+* ~~Single select mode w/o CAB.~~
