@@ -7,11 +7,13 @@ import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,6 +54,37 @@ public class MainActivity extends AppCompatActivity {
 
         setupRecyclerView(R.id.recyclerview, savedInstanceState);
         setupSwipeRefreshLayout();
+        setupToolbar();
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar==null) { return; }
+        setSupportActionBar(toolbar);
+
+        //noinspection ConstantConditions
+        getSupportActionBar().setTitle("MultiSelect Helper");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_show:
+                Snackbar.make(findViewById(R.id.main_content),
+                        "Select position(s): " +
+                                ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
+                                        .getSelectedPositions(),
+                        Snackbar.LENGTH_LONG).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -108,14 +141,8 @@ public class MainActivity extends AppCompatActivity {
                     onSwipeLayoutRefresh();
                 }
             });
-//            setSwipeRefreshOffset(dipsToPix(SWIPE_PROGRESS_VIEW_OFFSET_DEFAULT));
             mSwipeLayout.setColorSchemeResources(setSwipeRefreshColorSchemeResources());
         }
-    }
-
-    protected int dipsToPix(float dps) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps,
-                getResources().getDisplayMetrics());
     }
 
     public class SimpleStringRecyclerViewAdapter
@@ -128,15 +155,36 @@ public class MainActivity extends AppCompatActivity {
 
         public SimpleStringRecyclerViewAdapter(@NonNull Context context,
                                                @Nullable List<String> items) {
-            mHelper = new MultiSelectHelper(context, R.id.tag_position);
-            mHelper.setActionModeCallback(mActionModeCallback);
-//            Examples to show setting selected color at runtime.
+            //NOTE  Helper with Contextual Action Mode (CAB)
+//            mHelper = new MultiSelectHelper(context, R.id.tag_position);
+
+            // NOTE Helper with CAB but only selects one item at a time
+//            mHelper = new MultiSelectHelper(context, R.id.tag_position)
+//                    .setSingleSelectMode(true);
+
+            // NOTE If you setActionModeEnabled(false) this does not have to be set.
+//            mHelper.setActionModeCallback(mActionModeCallback);
+
+            //NOTE Helper that has no CAB and will only select one item at a time
+            mHelper = new MultiSelectHelper(context, R.id.tag_position)
+                    .setActionModeEnabled(false)
+                    .setSingleSelectMode(true);
+
+            // NOTE Helper that has no CAB but still can select multiple positions
+//            mHelper = new MultiSelectHelper(context, R.id.tag_position)
+//                    .setActionModeEnabled(false);
+
+            //NOTE Examples to show setting selected color at runtime.
 //            mHelper.setSelectedColor(Color.CYAN);
 //            mHelper.setSelectedColor(MainActivity.this, R.color.theme_cyan);
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground,
                     mTypedValue, true);
             mBackground = mTypedValue.resourceId;
             mValues = items;
+        }
+
+        public String getSelectedPositions() {
+            return mHelper==null ? "-1" : mHelper.getSelectedPositions().toString();
         }
 
         public void saveSelectedItems(@NonNull Bundle bundle) {
