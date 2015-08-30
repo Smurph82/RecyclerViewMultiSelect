@@ -76,8 +76,7 @@ public class MultiSelectHelper implements
         v.setOnLongClickListener(this);
     }
 
-    public void setOnMultiSelectListener(
-            @NonNull OnMultiSelectListener l) { mListener = l; }
+    public void setOnMultiSelectListener(@NonNull OnMultiSelectListener l) { mListener = l; }
 
     public void setActionModeCallback(@NonNull ActionMode.Callback callback) {
         mActionModeCallback = callback;
@@ -139,6 +138,9 @@ public class MultiSelectHelper implements
     @Override
     public boolean onLongClick(View v) {
         if (!mIsClickingEnabled) { return true; }
+        if (!isActionModeEnabled()) {
+            return mListener != null && mListener.onLongClick(v);
+        }
 
         Integer position = (Integer) v.getTag(TAG_ID);
         if (isSingleSelectMode()) {
