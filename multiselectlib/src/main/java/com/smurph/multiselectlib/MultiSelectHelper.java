@@ -33,6 +33,8 @@ public class MultiSelectHelper implements
 
     public static final String SAVE_KEY_SELECTED_POSITIONS =
             "com.smurph.multiselectlib.SAVED_POSITIONS";
+    public static final String SAVE_KEY_SELECTED_POSITION =
+            "com.smurph.multiselectlib.SAVED_POSITION";
 
     private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback;
@@ -90,6 +92,7 @@ public class MultiSelectHelper implements
         }
         clearSelected();
         mActionMode = null;
+        mSelectedPosition=-1;
     }
 
     public void clearSelected() { mIsSelected.clear(); }
@@ -103,10 +106,12 @@ public class MultiSelectHelper implements
 
     public void saveSelectedPositions(@NonNull Bundle bundle) {
         bundle.putIntegerArrayList(SAVE_KEY_SELECTED_POSITIONS, getSelectedPositions());
+        bundle.putInt(SAVE_KEY_SELECTED_POSITION, mSelectedPosition);
     }
 
     public void restoreSelectedPositions(@NonNull Context context, @NonNull Bundle bundle) {
         ArrayList<Integer> list = bundle.getIntegerArrayList(SAVE_KEY_SELECTED_POSITIONS);
+        mSelectedPosition = bundle.getInt(SAVE_KEY_SELECTED_POSITION, -1);
 
         if (list==null) { return; }
 
@@ -126,13 +131,18 @@ public class MultiSelectHelper implements
                 if (mSelectedPosition !=-1) {
                     toggleSelection(mSelectedPosition);
                 }
+                if (mSelectedPosition==position) {
+                    mSelectedPosition=-1;
+                    if (mActionMode!=null) { mActionMode.finish(); }
+                    return;
+                }
                 mSelectedPosition = position;
             }
             toggleSelection(position);
             if (!isSelectionMode() && mActionMode!=null) { mActionMode.finish(); }
             return;
         }
-        if (mListener!=null) { mListener.onClick(v, isSelectionMode()); }
+        if (mListener != null) { mListener.onClick(v, isSelectionMode()); }
     }
 
     @Override
@@ -159,7 +169,7 @@ public class MultiSelectHelper implements
     }
 
     private void startActionMode(@NonNull Context context) {
-        if (context instanceof AppCompatActivity) {
+        if (context instanceof AppCompatActivity && isActionModeEnabled()) {
             mActionMode = ((AppCompatActivity) context)
                     .startSupportActionMode(mActionModeCallback);
         }
@@ -173,8 +183,12 @@ public class MultiSelectHelper implements
                 mIsSelected.put(position, true);
             }
         } else {
-            mIsSelected.clear();
-            mIsSelected.put(position, true);
+            if (mIsSelected.get(position, false)) {
+                mIsSelected.clear();
+            } else {
+                mIsSelected.clear();
+                mIsSelected.put(position, true);
+            }
         }
 
         if (mListener!=null) { mListener.itemChangedAt(position); }
