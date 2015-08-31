@@ -5,7 +5,7 @@ Add to Android Studio project
 ```
 dependencies {
     ...
-    compile 'com.smurph.multiselectlib:multiselectlib:1.0.4'
+    compile 'com.smurph.multiselectlib:multiselectlib:1.0.5'
 }
 ```
 
