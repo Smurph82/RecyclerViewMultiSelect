@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_multi_w_cab"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/nav_multi_w_cab"
+            android:checked="true"/>
+        <item
+            android:id="@+id/nav_single_w_cab"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/nav_single_w_cab"/>
+        <item
+            android:id="@+id/nav_multi_wo_cab"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/nav_multi_wo_cab"/>
+        <item
+            android:id="@+id/nav_single_wo_cab"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/nav_single_wo_cab"/>
+    </group>
+</menu>

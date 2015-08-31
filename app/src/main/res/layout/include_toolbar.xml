@@ -6,7 +6,6 @@
     android:layout_height="?actionBarSize"
     android:background="?colorPrimary"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    android:theme="@style/ActionBarThemeOverlay"
+    app:theme="@style/ActionBarThemeOverlay"
     app:titleTextAppearance="@style/ActionBar.TitleText"
     app:layout_scrollFlags="scroll|enterAlways" />
-    <!-- app:contentInsetStart="?actionBarInsetStart" -->

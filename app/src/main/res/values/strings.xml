@@ -2,4 +2,8 @@
     <string name="app_name">RecyclerViewMultiSelect</string>
     <string name="action_delete">Delete</string>
     <string name="action_show_selected">Show selected</string>
+    <string name="nav_multi_w_cab">Multi w/ CAB</string>
+    <string name="nav_single_w_cab">Single w/ CAB</string>
+    <string name="nav_multi_wo_cab">Multi w/o CAB</string>
+    <string name="nav_single_wo_cab">Single w/o CAB</string>
 </resources>
