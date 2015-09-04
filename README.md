@@ -15,3 +15,6 @@ dependencies {
 * ~~MultiSelect w/o CAB.~~
 * ~~Single select mode w/ CAB.~~
 * ~~Single select mode w/o CAB.~~
+
+##### Looking into
+* See if the new, and still beta, Android Data Binding is an option for this library.
