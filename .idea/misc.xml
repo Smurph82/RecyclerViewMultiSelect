@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="EntryPointsManager">
-    <entry_points version="2.0" />
-  </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
     <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
@@ -34,6 +31,36 @@
           <State>
             <id />
           </State>
+          <State>
+            <id>Android</id>
+          </State>
+          <State>
+            <id>Android Lint</id>
+          </State>
+          <State>
+            <id>Class structure</id>
+          </State>
+          <State>
+            <id>Dependency issues</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>Inheritance issues</id>
+          </State>
+          <State>
+            <id>Internationalization issues</id>
+          </State>
+          <State>
+            <id>Java language level migration aids</id>
+          </State>
+          <State>
+            <id>Numeric issues</id>
+          </State>
+          <State>
+            <id>Portability issues</id>
+          </State>
         </expanded-state>
         <selected-state>
           <State>
@@ -61,18 +88,6 @@
   </component>
   <component name="masterDetails">
     <states>
-      <state key="Copyright.UI">
-        <settings>
-          <last-edited>Personal</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
       <state key="ScopeChooserConfigurable.UI">
         <settings>
           <splitter-proportions>
