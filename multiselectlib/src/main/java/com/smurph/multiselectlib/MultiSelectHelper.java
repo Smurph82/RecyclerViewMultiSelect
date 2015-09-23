@@ -209,6 +209,8 @@ public class MultiSelectHelper implements
 
     public boolean getIsSelected(int position) { return mIsSelected.get(position, false); }
 
+    public int getSelectedCount() { return mIsSelected.size(); }
+
     public MultiSelectHelper setSelectedColor(@ColorInt int color) {
         ACCENT_COLOR = color;
         return this;
