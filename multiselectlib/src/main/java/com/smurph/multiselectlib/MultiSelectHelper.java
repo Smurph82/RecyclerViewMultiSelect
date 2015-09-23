@@ -13,8 +13,11 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
 import android.view.View;
@@ -29,6 +32,8 @@ import java.util.ArrayList;
 public class MultiSelectHelper implements
         View.OnClickListener, View.OnLongClickListener {
 
+    private static final String tag = MultiSelectHelper.class.getSimpleName();
+
     protected SparseBooleanArray mIsSelected = new SparseBooleanArray();
 
     public static final String SAVE_KEY_SELECTED_POSITIONS =
@@ -39,7 +44,7 @@ public class MultiSelectHelper implements
     private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback;
 
-    private final int TAG_ID;
+//    private final int TAG_ID;
     private int ACCENT_COLOR;
     private final ColorStateList COLOR_STATE_LIST;
 
@@ -49,6 +54,8 @@ public class MultiSelectHelper implements
 
     private int mSelectedPosition = -1;
 
+    private RecyclerView.ViewHolder mHolder;
+
     public interface OnMultiSelectListener {
         void onClick(View v, boolean isSelectionMode);
         boolean onLongClick(View v);
@@ -56,7 +63,14 @@ public class MultiSelectHelper implements
     }
     private OnMultiSelectListener mListener;
 
-    public MultiSelectHelper(@NonNull Context context, @IdRes int tagId) {
+    /**
+     * @deprecated Please use {@link #MultiSelectHelper(Context)} instead
+     * @param context The context of your app.
+     * @param tagId The {@link IdRes} of the tag for the position
+     */
+    public MultiSelectHelper(@NonNull Context context, @IdRes int tagId) { this(context); }
+
+    public MultiSelectHelper(@NonNull Context context) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = context.obtainStyledAttributes(typedValue.data,
                 new int[]{R.attr.colorAccent, R.attr.selectedItemColor});
@@ -70,13 +84,31 @@ public class MultiSelectHelper implements
                 new int[] {accent_color_alt}
         );
 
-        TAG_ID = tagId;
+//        TAG_ID = tagId;
     }
 
+    /**
+     * @deprecated Do not use this method.
+     * Instead use {@link #setViewHolder(RecyclerView.ViewHolder)}
+     * I will turn this into a private method in the future.
+     * @param v
+     */
     public void setView(@NonNull View v) {
         v.setOnClickListener(this);
         v.setOnLongClickListener(this);
     }
+
+    public void setViewHolder(@NonNull RecyclerView.ViewHolder holder) {
+        mHolder = holder;
+        setView(holder.itemView);
+    }
+
+    /**
+     *
+     * @return The instance of you {@link android.support.v7.widget.RecyclerView.ViewHolder}
+     */
+    @Nullable
+    public RecyclerView.ViewHolder getViewHolder() { return mHolder; }
 
     public void setOnMultiSelectListener(@NonNull OnMultiSelectListener l) { mListener = l; }
 
@@ -122,10 +154,15 @@ public class MultiSelectHelper implements
 
     @Override
     public void onClick(View v) {
+        if (mHolder==null) {
+            Log.e(tag, "You did not call setViewHolder(). Please call it and not setView().");
+            return;
+        }
         if (!mIsClickingEnabled) { return; }
 
-        Integer position = (Integer) v.getTag(TAG_ID);
-        if ((isSelectionMode() || !isActionModeEnabled()) && position!=null) {
+//        Integer position = (Integer) v.getTag(TAG_ID);
+        int position = mHolder.getLayoutPosition();
+        if ((isSelectionMode() || !isActionModeEnabled())/* && position!=null*/) {
             if (isSingleSelectMode()) {
                 if (mSelectedPosition!=-1) {
                     toggleSelection(mSelectedPosition);
@@ -147,19 +184,24 @@ public class MultiSelectHelper implements
 
     @Override
     public boolean onLongClick(View v) {
+        if (mHolder==null) {
+            Log.e(tag, "You did not call setViewHolder(). Please call it and not setView().");
+            return true;
+        }
         if (!mIsClickingEnabled) { return true; }
         if (!isActionModeEnabled()) {
             return mListener != null && mListener.onLongClick(v);
         }
 
-        Integer position = (Integer) v.getTag(TAG_ID);
+//        Integer position = (Integer) v.getTag(TAG_ID);
+        int position = mHolder.getLayoutPosition();
         if (isSingleSelectMode()) {
             if (mSelectedPosition !=-1) {
                 toggleSelection(mSelectedPosition);
             }
             mSelectedPosition = position;
         }
-        if (mActionMode != null || position == null) { return false; }
+        if (mActionMode != null /*|| position == null*/) { return false; }
 
         if (mIsActionModeEnabled) { startActionMode(v.getContext()); }
 

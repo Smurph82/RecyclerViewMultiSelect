@@ -106,14 +106,17 @@ public class SimpleStringRecyclerViewAdapter
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(android.R.layout.simple_list_item_1, parent, false);
         v.setBackgroundResource(mBackground);
-        mHelper.setView(v);
+//        mHelper.setView(v);
+        mHelper.setViewHolder(new ViewHolder(v));
         mHelper.setOnMultiSelectListener(mListener);
-        return new ViewHolder(v);
+//        return new ViewHolder(v);
+        return (ViewHolder) mHelper.getViewHolder();
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.itemView.setTag(R.id.tag_position, position);
+        // Should be no longer needed
+//        holder.itemView.setTag(R.id.tag_position, position);
         if (mHelper.getIsSelected(position)) {
             mHelper.setRippleColor(holder.itemView);
             holder.mTxtView.setTextColor(Color.WHITE);
