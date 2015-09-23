@@ -126,9 +126,8 @@ public class MultiSelectHelper implements
 
         Integer position = (Integer) v.getTag(TAG_ID);
         if ((isSelectionMode() || !isActionModeEnabled()) && position!=null) {
-            if (mListener!=null) { mListener.onClick(v, isSelectionMode()); }
             if (isSingleSelectMode()) {
-                if (mSelectedPosition !=-1) {
+                if (mSelectedPosition!=-1) {
                     toggleSelection(mSelectedPosition);
                 }
                 if (mSelectedPosition==position) {
@@ -139,6 +138,7 @@ public class MultiSelectHelper implements
                 mSelectedPosition = position;
             }
             toggleSelection(position);
+            if (mListener!=null) { mListener.onClick(v, isSelectionMode()); }
             if (!isSelectionMode() && mActionMode!=null) { mActionMode.finish(); }
             return;
         }
