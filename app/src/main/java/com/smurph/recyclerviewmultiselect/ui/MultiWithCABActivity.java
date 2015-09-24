@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -13,8 +14,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.smurph.multiselectlib.MultiSelectAdapter;
 import com.smurph.recyclerviewmultiselect.R;
 import com.smurph.recyclerviewmultiselect.ui.adapter.SimpleStringRecyclerViewAdapter;
 import com.smurph.recyclerviewmultiselect.ui.base.BaseActivity;
@@ -96,6 +99,16 @@ public class MultiWithCABActivity extends BaseActivity {
         mRecyclerView.hasFixedSize();
         mRecyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, mList,
                 SimpleStringRecyclerViewAdapter.HELPER_MULTI_WITH_CAB));
+        ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
+                .setOnItemClickedListener(new MultiSelectAdapter.SimpleOnItemClickedListener() {
+                    @Override
+                    public void onItemClicked(@NonNull View v, int position,
+                                              boolean isSelectionMode) {
+                        if (isSelectionMode) { return; }
+                        Toast.makeText(MultiWithCABActivity.this, "You clicked: " + position,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
         ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
                 .restoreSelectedItems(this, bundle);
     }
