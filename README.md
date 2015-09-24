@@ -3,6 +3,15 @@ This is a simple implementation of a MultiSelect with ActionMode for the Recycle
 
 Add to Android Studio project
 ```
+buildscript {
+    repositories {
+        jcenter()
+    }
+    ...
+}
+```
+
+```
 dependencies {
     ...
     compile 'com.smurph.multiselectlib:multiselectlib:1.0.6'
