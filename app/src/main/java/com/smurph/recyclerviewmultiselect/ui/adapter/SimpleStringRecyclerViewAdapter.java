@@ -2,12 +2,10 @@ package com.smurph.recyclerviewmultiselect.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,11 +16,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.smurph.multiselectlib.MultiSelectAdapter;
 import com.smurph.multiselectlib.MultiSelectHelper;
+import com.smurph.multiselectlib.MultiSelectViewHolder;
 import com.smurph.recyclerviewmultiselect.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,12 +31,11 @@ import java.util.List;
  *
  */
 public class SimpleStringRecyclerViewAdapter
-        extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
+        extends MultiSelectAdapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
 
     private int mBackground;
     private List<String> mValues;
     private MultiSelectHelper mHelper;
-    private Context mContext;
 
     @Retention(RetentionPolicy.CLASS)
     @IntDef({HELPER_MULTI_WITH_CAB, HELPER_SINGLE_WITH_CAB,
@@ -46,11 +46,9 @@ public class SimpleStringRecyclerViewAdapter
     public static final int HELPER_MULTI_WITHOUT_CAB = 3;
     public static final int HELPER_SINGLE_WITHOUT_CAB = 4;
 
-    public SimpleStringRecyclerViewAdapter(@NonNull Context context,
-                                           @Nullable List<String> items,
+    public SimpleStringRecyclerViewAdapter(@NonNull Context context, @Nullable List<String> items,
                                            @HelperTypeDef int type) {
-        mContext = context;
-
+        super(context);
         switch (type) {
             case HELPER_MULTI_WITH_CAB:
                 //NOTE  Helper with Contextual Action Mode (CAB)
@@ -76,29 +74,15 @@ public class SimpleStringRecyclerViewAdapter
                 break;
             default: break;
         }
-
-        //NOTE Examples to show setting selected color at runtime.
+        //NOTE: Examples to show setting selected color at runtime.
 //            mHelper.setSelectedColor(Color.CYAN);
 //            mHelper.setSelectedColor(MainActivity.this, R.color.theme_cyan);
+        setMultiSelectHelper(mHelper);
+
         TypedValue mTypedValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.selectableItemBackground,
-                mTypedValue, true);
+        context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mBackground = mTypedValue.resourceId;
         mValues = items;
-    }
-
-    public String getSelectedPositions() {
-        return mHelper==null ? "-1" : mHelper.getSelectedPositions().toString();
-    }
-
-    public void saveSelectedItems(@NonNull Bundle bundle) {
-        mHelper.saveSelectedPositions(bundle);
-    }
-
-    public void restoreSelectedItems(@NonNull Context context, @Nullable Bundle bundle) {
-        if (bundle==null) { return; }
-
-        mHelper.restoreSelectedPositions(context, bundle);
     }
 
     @Override
@@ -106,17 +90,15 @@ public class SimpleStringRecyclerViewAdapter
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(android.R.layout.simple_list_item_1, parent, false);
         v.setBackgroundResource(mBackground);
-//        mHelper.setView(v);
-        mHelper.setViewHolder(new ViewHolder(v));
-        mHelper.setOnMultiSelectListener(mListener);
-//        return new ViewHolder(v);
-        return (ViewHolder) mHelper.getViewHolder();
+        ViewHolder vH = new ViewHolder(v);
+        attachViewHolder(vH);
+        return vH;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // Should be no longer needed
-//        holder.itemView.setTag(R.id.tag_position, position);
+        // NOTE: This must be called.
+        super.onBindViewHolder(holder, position);
         if (mHelper.getIsSelected(position)) {
             mHelper.setRippleColor(holder.itemView);
             holder.mTxtView.setTextColor(Color.WHITE);
@@ -131,7 +113,9 @@ public class SimpleStringRecyclerViewAdapter
     @Override
     public int getItemCount() { return mValues.size(); }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public void remove(String s) { mValues.remove(s); }
+
+    public class ViewHolder extends MultiSelectViewHolder {
         public String mString;
         public TextView mTxtView;
 
@@ -141,30 +125,7 @@ public class SimpleStringRecyclerViewAdapter
         }
     }
 
-    public void setIsClickingEnabled(boolean isEnabled) {
-        mHelper.setIsClickingEnabled(isEnabled);
-    }
-
-    private MultiSelectHelper.OnMultiSelectListener mListener =
-            new MultiSelectHelper.OnMultiSelectListener() {
-
-                @Override
-                public void onClick(View v, boolean isSelectionMode) {
-                    if (isSelectionMode) { return; }
-
-                    Toast.makeText(v.getContext(), "Position " +
-                            v.getTag(R.id.tag_position) +
-                            " clicked.", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public boolean onLongClick(View v) { return true; }
-
-                @Override
-                public void itemChangedAt(int position) {
-                    notifyItemChanged(position);
-                }
-            };
+    public void setIsClickingEnabled(boolean isEnabled) { mHelper.setIsClickingEnabled(isEnabled); }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
@@ -183,9 +144,16 @@ public class SimpleStringRecyclerViewAdapter
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.action_delete:
-                    Toast.makeText(mContext, "Delete these.", Toast.LENGTH_SHORT).show();
+                    if (getContext()!=null) {
+                        Toast.makeText(getContext(), "Delete these.", Toast.LENGTH_SHORT).show();
+                    }
                     List<Integer> list = mHelper.getSelectedPositions();
-                    for (Integer i : list) { notifyItemChanged(i); }
+                    List<String> items = new ArrayList<>(list.size());
+                    for (Integer i : list) items.add(mValues.get(i)); ;
+                    list.clear();
+                    list = null;
+                    for (String s : items) { remove(s); }
+                    notifyDataSetChanged();
                     mode.finish();
                     return true;
                 default:
