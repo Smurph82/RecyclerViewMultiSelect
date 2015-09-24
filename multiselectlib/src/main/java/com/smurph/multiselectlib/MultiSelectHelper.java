@@ -13,10 +13,9 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -29,8 +28,8 @@ import java.util.ArrayList;
  * This class is meant to help with multi-item selection and the ActionMode for Android using
  * the RecyclerView
  */
-public class MultiSelectHelper implements
-        View.OnClickListener, View.OnLongClickListener {
+@SuppressWarnings("unused")
+public class MultiSelectHelper {
 
     private static final String tag = MultiSelectHelper.class.getSimpleName();
 
@@ -44,7 +43,6 @@ public class MultiSelectHelper implements
     private ActionMode mActionMode;
     private ActionMode.Callback mActionModeCallback;
 
-//    private final int TAG_ID;
     private int ACCENT_COLOR;
     private final ColorStateList COLOR_STATE_LIST;
 
@@ -53,8 +51,6 @@ public class MultiSelectHelper implements
     private boolean mIsSingleSelectMode = false;
 
     private int mSelectedPosition = -1;
-
-    private RecyclerView.ViewHolder mHolder;
 
     public interface OnMultiSelectListener {
         void onClick(View v, boolean isSelectionMode);
@@ -66,10 +62,15 @@ public class MultiSelectHelper implements
     /**
      * @deprecated Please use {@link #MultiSelectHelper(Context)} instead
      * @param context The context of your app.
-     * @param tagId The {@link IdRes} of the tag for the position
+     * @param tagId The {@link IdRes} of the tag for the position no used.
      */
     public MultiSelectHelper(@NonNull Context context, @IdRes int tagId) { this(context); }
 
+    /**
+     * Create a new instance of the MultiSelectHelper
+     * @param context The {@link Context} of your app. Will be held it in a
+     * {@link java.lang.ref.WeakReference}
+     */
     public MultiSelectHelper(@NonNull Context context) {
         TypedValue typedValue = new TypedValue();
         TypedArray a = context.obtainStyledAttributes(typedValue.data,
@@ -83,32 +84,7 @@ public class MultiSelectHelper implements
                 new int[][] { new int[]{} },
                 new int[] {accent_color_alt}
         );
-
-//        TAG_ID = tagId;
     }
-
-    /**
-     * @deprecated Do not use this method.
-     * Instead use {@link #setViewHolder(RecyclerView.ViewHolder)}
-     * I will turn this into a private method in the future.
-     * @param v
-     */
-    public void setView(@NonNull View v) {
-        v.setOnClickListener(this);
-        v.setOnLongClickListener(this);
-    }
-
-    public void setViewHolder(@NonNull RecyclerView.ViewHolder holder) {
-        mHolder = holder;
-        setView(holder.itemView);
-    }
-
-    /**
-     *
-     * @return The instance of you {@link android.support.v7.widget.RecyclerView.ViewHolder}
-     */
-    @Nullable
-    public RecyclerView.ViewHolder getViewHolder() { return mHolder; }
 
     public void setOnMultiSelectListener(@NonNull OnMultiSelectListener l) { mListener = l; }
 
@@ -152,16 +128,16 @@ public class MultiSelectHelper implements
         if (isSelectionMode()) { startActionMode(context); }
     }
 
-    @Override
     public void onClick(View v) {
-        if (mHolder==null) {
-            Log.e(tag, "You did not call setViewHolder(). Please call it and not setView().");
+        ViewHolder holder = (ViewHolder) v.getTag(R.id.tag_viewholder);
+        if (holder==null) {
+            Log.e(tag, "You did not call super.onBindViewHolder(holder, position); " +
+                    "in your Adapters onBindViewHolder. Please call it.");
             return;
         }
         if (!mIsClickingEnabled) { return; }
 
-//        Integer position = (Integer) v.getTag(TAG_ID);
-        int position = mHolder.getLayoutPosition();
+        int position = holder.getLayoutPosition();
         if ((isSelectionMode() || !isActionModeEnabled())/* && position!=null*/) {
             if (isSingleSelectMode()) {
                 if (mSelectedPosition!=-1) {
@@ -182,9 +158,9 @@ public class MultiSelectHelper implements
         if (mListener != null) { mListener.onClick(v, isSelectionMode()); }
     }
 
-    @Override
     public boolean onLongClick(View v) {
-        if (mHolder==null) {
+        ViewHolder holder = (ViewHolder) v.getTag(R.id.tag_viewholder);
+        if (holder==null) {
             Log.e(tag, "You did not call setViewHolder(). Please call it and not setView().");
             return true;
         }
@@ -193,15 +169,14 @@ public class MultiSelectHelper implements
             return mListener != null && mListener.onLongClick(v);
         }
 
-//        Integer position = (Integer) v.getTag(TAG_ID);
-        int position = mHolder.getLayoutPosition();
+        int position = holder.getLayoutPosition();
         if (isSingleSelectMode()) {
             if (mSelectedPosition !=-1) {
                 toggleSelection(mSelectedPosition);
             }
             mSelectedPosition = position;
         }
-        if (mActionMode != null /*|| position == null*/) { return false; }
+        if (mActionMode != null) { return false; }
 
         if (mIsActionModeEnabled) { startActionMode(v.getContext()); }
 
