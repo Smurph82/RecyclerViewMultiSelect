@@ -19,9 +19,10 @@ dependencies {
 ```
 
 ##### COMING SOON
+* Load the Helper with already selected items/position.
+* Add inline Java Docs
 * ~~New demo app showing all the features and examples.~~
 * ~~Custom RecyclerView Adapter class to implement some of the function for the end developer.~~
-* Load the Helper with already selected items/position.
 * ~~MultiSelect w/o CAB.~~
 * ~~Single select mode w/ CAB.~~
 * ~~Single select mode w/o CAB.~~
