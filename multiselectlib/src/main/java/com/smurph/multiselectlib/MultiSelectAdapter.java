@@ -15,6 +15,7 @@ import java.lang.ref.WeakReference;
  * Created by Ben on 9/24/2015.
  * This is an abstract RecyclerViewAdapter
  */
+@SuppressWarnings("unused")
 public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
         extends RecyclerView.Adapter<VH> {
 
