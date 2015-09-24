@@ -50,6 +50,8 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
         return mHelper==null ? "-1" : mHelper.getSelectedPositions().toString();
     }
 
+    public int getSelectedCount() { return mHelper==null ? 0 : mHelper.getSelectedCount(); }
+
     /**
      * Your instance of the {@link MultiSelectHelper}
      * @param helper {@link MultiSelectHelper}
