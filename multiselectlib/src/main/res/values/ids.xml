@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Depreciated -->
     <item name="tag_position" type="id">0x01337000</item>
+    <item name="tag_viewholder" type="id">0x240915</item>
 
 </resources>
