@@ -27,7 +27,7 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
 
     public interface OnItemClickedListener {
         void onItemClicked(@NonNull View v, int position, boolean isSelectionMode,
-                           boolean isExitActionMode);
+                           boolean isExitingActionMode);
         boolean onItemLongClicked(@NonNull View v, int position, boolean isSelectionMode);
     }
     protected OnItemClickedListener mItemClickedListener;
