@@ -100,7 +100,7 @@ public class SingleWithCABActivity extends BaseActivity {
                     public void onItemClicked(@NonNull View v, int position,
                                               boolean isSelectionMode,
                                               boolean isExitingActionMode) {
-                        if (isSelectionMode || isExitingActionMode) return;
+                        if (isSelectionMode && !isExitingActionMode) { return; }
                         Toast.makeText(SingleWithCABActivity.this, "You clicked: " + position,
                                 Toast.LENGTH_SHORT).show();
                     }
