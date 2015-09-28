@@ -98,8 +98,9 @@ public class SingleWithCABActivity extends BaseActivity {
                 .setOnItemClickedListener(new MultiSelectAdapter.SimpleOnItemClickedListener() {
                     @Override
                     public void onItemClicked(@NonNull View v, int position,
-                                              boolean isSelectionMode) {
-                        if (isSelectionMode) return;
+                                              boolean isSelectionMode,
+                                              boolean isExitingActionMode) {
+                        if (isSelectionMode || isExitingActionMode) return;
                         Toast.makeText(SingleWithCABActivity.this, "You clicked: " + position,
                                 Toast.LENGTH_SHORT).show();
                     }

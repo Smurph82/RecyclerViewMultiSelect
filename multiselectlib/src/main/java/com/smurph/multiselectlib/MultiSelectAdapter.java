@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,9 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
     private WeakReference<Context> mWeakContext;
 
     public interface OnItemClickedListener {
-        void onItemClicked(@NonNull View v, int position, boolean isSelectionMode);
-        void onItemLongClicked(@NonNull View v, int position, boolean isSelectionMode);
+        void onItemClicked(@NonNull View v, int position, boolean isSelectionMode,
+                           boolean isExitActionMode);
+        boolean onItemLongClicked(@NonNull View v, int position, boolean isSelectionMode);
     }
     protected OnItemClickedListener mItemClickedListener;
 
@@ -105,31 +107,37 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
      * @param v The {@link View} that was clicked
      * @param type 1 for click, 2 for long click,
      */
-    private void handleClicks(@NonNull View v, RecyclerView.ViewHolder h, int type,
-                              boolean isSelectionMode) {
-        if (mItemClickedListener==null) { return; }
+    private boolean handleClicks(@NonNull View v, RecyclerView.ViewHolder h, int type,
+                              boolean isSelectionMode, boolean isExitingActionMode) {
+        if (mItemClickedListener==null) { return false; }
 
         switch (type) {
             case 1: // Short click
-                mItemClickedListener.onItemClicked(v, h.getLayoutPosition(), isSelectionMode);
+                mItemClickedListener.onItemClicked(v, h.getLayoutPosition(), isSelectionMode,
+                        isExitingActionMode);
                 break;
             case 2: // Long Click
-                mItemClickedListener.onItemLongClicked(v, h.getLayoutPosition(), isSelectionMode);
-                break;
+                return mItemClickedListener.onItemLongClicked(v, h.getLayoutPosition(),
+                        isSelectionMode);
             default:
                 break;
         }
+        return false;
     }
 
     private MultiSelectHelper.OnMultiSelectListener mListener =
             new MultiSelectHelper.OnMultiSelectListener() {
                 @Override
-                public void onClick(View v, boolean isSelectionMode) {
-                    handleClicks(v, ((RecyclerView.ViewHolder)v.getTag(R.id.tag_viewholder)), 1,
-                            isSelectionMode);
+                public void onClick(View v, boolean isSelectionMode, boolean isExitingActionMode) {
+                    handleClicks(v, ((ViewHolder)v.getTag(R.id.tag_viewholder)), 1,
+                            isSelectionMode, isExitingActionMode);
                 }
                 @Override
-                public boolean onLongClick(View v) { return true; }
+                public boolean onLongClick(View v, boolean isSelectionMode) {
+                    // TODO May need work with the isExitingActionMode
+                    return handleClicks(v, ((ViewHolder)v.getTag(R.id.tag_viewholder)), 2,
+                            isSelectionMode, false);
+                }
                 @Override
                 public void itemChangedAt(int position) { notifyItemChanged(position); }
             };
@@ -140,8 +148,11 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
 
     public static class SimpleOnItemClickedListener implements OnItemClickedListener {
         @Override
-        public void onItemClicked(@NonNull View v, int position, boolean isSelectionMode) { }
+        public void onItemClicked(@NonNull View v, int position, boolean isSelectionMode,
+                                  boolean isExitingActionMode) { }
         @Override
-        public void onItemLongClicked(@NonNull View v, int position, boolean isSelectionMode) { }
+        public boolean onItemLongClicked(@NonNull View v, int position, boolean isSelectionMode) {
+            return true;
+        }
     }
 }

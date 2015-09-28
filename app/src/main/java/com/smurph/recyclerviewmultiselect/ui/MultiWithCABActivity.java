@@ -97,20 +97,19 @@ public class MultiWithCABActivity extends BaseActivity {
         mRecyclerView = (RecyclerView) findViewById(id);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.hasFixedSize();
-        mRecyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, mList,
-                SimpleStringRecyclerViewAdapter.HELPER_MULTI_WITH_CAB));
-        ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
-                .setOnItemClickedListener(new MultiSelectAdapter.SimpleOnItemClickedListener() {
-                    @Override
-                    public void onItemClicked(@NonNull View v, int position,
-                                              boolean isSelectionMode) {
-                        if (isSelectionMode) { return; }
-                        Toast.makeText(MultiWithCABActivity.this, "You clicked: " + position,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-        ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
-                .restoreSelectedItems(this, bundle);
+        SimpleStringRecyclerViewAdapter adapter = new SimpleStringRecyclerViewAdapter(this, mList,
+                SimpleStringRecyclerViewAdapter.HELPER_MULTI_WITH_CAB);
+        mRecyclerView.setAdapter(adapter);
+        adapter.setOnItemClickedListener(new MultiSelectAdapter.SimpleOnItemClickedListener() {
+            @Override
+            public void onItemClicked(@NonNull View v, int position,
+                                      boolean isSelectionMode, boolean isExitingActionMode) {
+                if (isSelectionMode || isExitingActionMode) { return; }
+                Toast.makeText(MultiWithCABActivity.this, "You clicked: " + position,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+        adapter.restoreSelectedItems(this, bundle);
     }
 
     @Override

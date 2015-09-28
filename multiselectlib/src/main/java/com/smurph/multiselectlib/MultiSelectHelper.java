@@ -53,8 +53,8 @@ public class MultiSelectHelper {
     private int mSelectedPosition = -1;
 
     public interface OnMultiSelectListener {
-        void onClick(View v, boolean isSelectionMode);
-        boolean onLongClick(View v);
+        void onClick(View v, boolean isSelectionMode, boolean isExitingActionMode);
+        boolean onLongClick(View v, boolean isSelectionMode);
         void itemChangedAt(int position);
     }
     private OnMultiSelectListener mListener;
@@ -138,6 +138,7 @@ public class MultiSelectHelper {
         if (!mIsClickingEnabled) { return; }
 
         int position = holder.getLayoutPosition();
+        boolean isExitingActionMode = false;
         if ((isSelectionMode() || !isActionModeEnabled())/* && position!=null*/) {
             if (isSingleSelectMode()) {
                 if (mSelectedPosition!=-1) {
@@ -151,11 +152,13 @@ public class MultiSelectHelper {
                 mSelectedPosition = position;
             }
             toggleSelection(position);
-            if (mListener!=null) { mListener.onClick(v, isSelectionMode()); }
+            if (mListener!=null) { mListener.onClick(v, isSelectionMode(),
+                    (!isSelectionMode() && mActionMode!=null)); }
             if (!isSelectionMode() && mActionMode!=null) { mActionMode.finish(); }
             return;
         }
-        if (mListener != null) { mListener.onClick(v, isSelectionMode()); }
+        // TODO This may need work with the isExitingActionMode
+        if (mListener != null) { mListener.onClick(v, isSelectionMode(), false); }
     }
 
     public boolean onLongClick(View v) {
@@ -166,7 +169,7 @@ public class MultiSelectHelper {
         }
         if (!mIsClickingEnabled) { return true; }
         if (!isActionModeEnabled()) {
-            return mListener != null && mListener.onLongClick(v);
+            return mListener != null && mListener.onLongClick(v, isSelectionMode());
         }
 
         int position = holder.getLayoutPosition();
@@ -182,7 +185,7 @@ public class MultiSelectHelper {
 
         toggleSelection(position);
 
-        return mListener != null && mListener.onLongClick(v);
+        return mListener != null && mListener.onLongClick(v, isSelectionMode());
     }
 
     private void startActionMode(@NonNull Context context) {
