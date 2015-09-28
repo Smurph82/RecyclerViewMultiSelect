@@ -138,7 +138,6 @@ public class MultiSelectHelper {
         if (!mIsClickingEnabled) { return; }
 
         int position = holder.getLayoutPosition();
-        boolean isExitingActionMode = false;
         if ((isSelectionMode() || !isActionModeEnabled())/* && position!=null*/) {
             if (isSingleSelectMode()) {
                 if (mSelectedPosition!=-1) {
