@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 group = 'com.smurph.multiselectlib'
-version = '1.0.7'
+version = '1.0.8'
 def siteUrl = 'https://github.com/Smurph82/RecyclerViewMultiSelect'      // Homepage URL of the library
 def gitUrl = 'https://github.com/Smurph82/RecyclerViewMultiSelect.git'   // Git repository URL
 
