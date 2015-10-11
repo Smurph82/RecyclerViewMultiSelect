@@ -22,7 +22,7 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
 
     private static final String tag = MultiSelectAdapter.class.getSimpleName();
 
-    protected MultiSelectHelper mHelper;
+    private MultiSelectHelper mHelper;
     private WeakReference<Context> mWeakContext;
 
     public interface OnItemClickedListener {
