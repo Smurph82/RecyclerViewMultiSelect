@@ -49,11 +49,25 @@ public abstract class MultiSelectAdapter<VH extends MultiSelectViewHolder>
         mHelper.restoreSelectedPositions(context, bundle);
     }
 
+    /**
+     * Get all of the currently selected items as a <code>String</code>
+     * @return <code>String</code> representing all currently selected items.
+     */
     public String getSelectedPositions() {
         return mHelper==null ? "-1" : mHelper.getSelectedPositions().toString();
     }
 
+    /**
+     * Get the current selected item count.
+     * @return <code>int</code> representing the currently selected item count.
+     */
     public int getSelectedCount() { return mHelper==null ? 0 : mHelper.getSelectedCount(); }
+
+    /**
+     * This will cause the current ActionMode to finish. It will also unselect anything currently
+     * selected.
+     */
+    public void finishActionMode() { if (mHelper!=null) { mHelper.forceFinishActionMode(); } }
 
     /**
      * Your instance of the {@link MultiSelectHelper}
