@@ -92,6 +92,22 @@ public class MultiSelectHelper {
         mActionModeCallback = callback;
     }
 
+    /**
+     * This is called if you want to immediately finish and close the current ActionMode.
+     * This results in everything being unselected.
+     */
+    public void forceFinishActionMode() {
+        if (!isSelectionMode()) { return; }
+        ArrayList<Integer> selectedPositions = getSelectedPositions();
+        mIsSelected.clear();
+        if (mListener!=null) { for (Integer i : selectedPositions) { mListener.itemChangedAt(i); } }
+        mActionMode.finish();
+    }
+
+    /**
+     * This should be called in the <code>onDestroyActionMode</code> of your
+     * {@link android.support.v7.view.ActionMode.Callback}. This handles clean up.
+     */
     public void destroyActionMode() {
         if (isSelectionMode() && mListener != null) {
             for (int i=0,c=mIsSelected.size();i<c;i++) {
