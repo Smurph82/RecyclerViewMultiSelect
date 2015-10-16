@@ -226,6 +226,7 @@ public class MultiSelectHelper {
             }
         }
 
+        mActionMode.invalidate();
         if (mListener!=null) { mListener.itemChangedAt(position); }
     }
 
