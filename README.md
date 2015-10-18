@@ -14,7 +14,7 @@ buildscript {
 ```
 dependencies {
     ...
-    compile 'com.smurph.multiselectlib:multiselectlib:1.0.6'
+    compile 'com.smurph.multiselectlib:multiselectlib:1.0.8'
 }
 ```
 
