@@ -52,24 +52,24 @@ public class SimpleStringRecyclerViewAdapter
         switch (type) {
             case HELPER_MULTI_WITH_CAB:
                 //NOTE  Helper with Contextual Action Mode (CAB)
-                mHelper = new MultiSelectHelper(context, R.id.tag_position);
+                mHelper = new MultiSelectHelper(context);
                 mHelper.setActionModeCallback(mActionModeCallback);
                 break;
             case HELPER_SINGLE_WITH_CAB:
                 // NOTE Helper with CAB but only selects one item at a time
-                mHelper = new MultiSelectHelper(context, R.id.tag_position)
+                mHelper = new MultiSelectHelper(context)
                         .setSingleSelectMode(true);
                 mHelper.setActionModeCallback(mActionModeCallback);
                 break;
             case HELPER_SINGLE_WITHOUT_CAB:
                 //NOTE Helper that has no CAB and will only select one item at a time
-                mHelper = new MultiSelectHelper(context, R.id.tag_position)
+                mHelper = new MultiSelectHelper(context)
                     .setActionModeEnabled(false)
                     .setSingleSelectMode(true);
                 break;
             case HELPER_MULTI_WITHOUT_CAB:
             // NOTE Helper that has no CAB but still can select multiple positions
-                mHelper = new MultiSelectHelper(context, R.id.tag_position)
+                mHelper = new MultiSelectHelper(context)
                         .setActionModeEnabled(false);
                 break;
             default: break;
