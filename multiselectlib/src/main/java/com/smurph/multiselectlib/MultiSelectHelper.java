@@ -101,7 +101,7 @@ public class MultiSelectHelper {
         ArrayList<Integer> selectedPositions = getSelectedPositions();
         mIsSelected.clear();
         if (mListener!=null) { for (Integer i : selectedPositions) { mListener.itemChangedAt(i); } }
-        mActionMode.finish();
+        if (mActionMode!=null) { mActionMode.finish(); }
     }
 
     /**
