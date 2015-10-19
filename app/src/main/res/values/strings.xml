@@ -6,4 +6,5 @@
     <string name="nav_single_w_cab">Single w/ CAB</string>
     <string name="nav_multi_wo_cab">Multi w/o CAB</string>
     <string name="nav_single_wo_cab">Single w/o CAB</string>
+    <string name="nav_viewpager_w_cab">ViewPager w/ CAB</string>
 </resources>

@@ -13,7 +13,11 @@
         <!--<item name="selectedItemColor">#f00</item>-->
     </style>
 
-    <style name="Theme.MultiSelector" parent="Base.Theme.MultiSelector"/>
+    <style name="Theme.MultiSelector" parent="Base.Theme.MultiSelector" />
+
+    <style name="Theme.MultiSelector.FragmentRefresh">
+        <item name="isFragmentRefresh">true</item>
+    </style>
 
     <style name="ActionBarThemeOverlay" parent="">
         <item name="android:textColorPrimary">#000</item>
@@ -28,6 +32,14 @@
 
     <style name="Theme.ActionMode" parent="Widget.AppCompat.ActionMode">
         <item name="background">?colorAccent</item>
+        <item name="titleTextStyle">@style/Theme.ActionMode.Title</item>
+        <item name="subtitleTextStyle">@style/Theme.ActionMode.Subtitle</item>
+    </style>
+    <style name="Theme.ActionMode.Title" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    <style name="Theme.ActionMode.Subtitle" parent="TextAppearance.AppCompat.Widget.ActionMode.Subtitle">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>

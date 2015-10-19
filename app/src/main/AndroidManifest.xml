@@ -17,6 +17,8 @@
         <activity android:name=".ui.SingleWithCABActivity"/>
         <activity android:name=".ui.MultiWithoutCABActivity"/>
         <activity android:name=".ui.SingleWithoutCABActivity"/>
+        <activity android:name=".ui.ViewPagerActivity"
+            android:theme="@style/Theme.MultiSelector.FragmentRefresh"/>
 
     </application>
 

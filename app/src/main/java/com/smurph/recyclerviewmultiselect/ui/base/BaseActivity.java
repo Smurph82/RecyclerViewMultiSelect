@@ -2,13 +2,16 @@ package com.smurph.recyclerviewmultiselect.ui.base;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
@@ -19,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Fade;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -29,6 +33,7 @@ import com.smurph.recyclerviewmultiselect.ui.MultiWithCABActivity;
 import com.smurph.recyclerviewmultiselect.ui.MultiWithoutCABActivity;
 import com.smurph.recyclerviewmultiselect.ui.SingleWithCABActivity;
 import com.smurph.recyclerviewmultiselect.ui.SingleWithoutCABActivity;
+import com.smurph.recyclerviewmultiselect.ui.ViewPagerActivity;
 
 /**
  * Created by Ben on 6/17/2015.
@@ -40,10 +45,12 @@ public abstract class BaseActivity extends AppCompatActivity
     protected DrawerLayout mDrawerLayout;
     private SwipeRefreshLayout mSwipeLayout;
     private Toolbar mActionBarToolbar;
+    protected AppBarLayout mAppBar;
 
     protected long TRANSITION_DURATION;
     // Default ActionBar height 52
     protected static final int SWIPE_PROGRESS_VIEW_OFFSET_DEFAULT = 62;
+    private boolean mIsFragmentRefresh;
 
     private static final String tag = BaseActivity.class.getSimpleName();
 
@@ -53,6 +60,11 @@ public abstract class BaseActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResource());
+
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = obtainStyledAttributes(typedValue.data, new int[]{R.attr.isFragmentRefresh});
+        mIsFragmentRefresh = a.getBoolean(0, false);
+        a.recycle();
 
         updateFromBundle(savedInstanceState);
 
@@ -74,9 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
+    protected void onSaveInstanceState(Bundle outState) { super.onSaveInstanceState(outState); }
 
     private void setupWindowTransition() {
         if (Config.isAboveOrEqualAPILvl(Build.VERSION_CODES.LOLLIPOP)) { setupWindowAnimation(); }
@@ -88,11 +98,10 @@ public abstract class BaseActivity extends AppCompatActivity
         getWindow().setReturnTransition(new Fade().setDuration(TRANSITION_DURATION));
     }
 
-    private void setupToolbar() {
-        if (getActionBarToolbar()!=null) { setupHomeUp(); }
-    }
+    private void setupToolbar() { if (getActionBarToolbar()!=null) { setupHomeUp(); } }
 
     protected Toolbar getActionBarToolbar() {
+        mAppBar = (AppBarLayout) findViewById(R.id.appbar);
         if (mActionBarToolbar == null) {
             mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
             if (mActionBarToolbar != null) { setSupportActionBar(mActionBarToolbar); }
@@ -109,6 +118,8 @@ public abstract class BaseActivity extends AppCompatActivity
     private void setupDrawerLayout() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     }
+
+    public boolean isFragmentRefresh() { return mIsFragmentRefresh; }
 
     private void setupNavigationView() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -149,6 +160,9 @@ public abstract class BaseActivity extends AppCompatActivity
                         break;
                     case R.id.nav_single_wo_cab:
                         intent = new Intent(BaseActivity.this, SingleWithoutCABActivity.class);
+                        break;
+                    case R.id.nav_viewpager_w_cab:
+                        intent = new Intent(BaseActivity.this, ViewPagerActivity.class);
                         break;
                     default:
                         intent = null;
@@ -206,11 +220,20 @@ public abstract class BaseActivity extends AppCompatActivity
     protected void onSwipeLayoutRefresh() { }
 
     protected void showEditTextError(@NonNull final EditText v, @Nullable String message) {
-        v.setError(message);
-        v.postDelayed(new Runnable() {
-            @Override
-            public void run() { v.setError(null); }
-        }, 2000);
+        if (v.getParent() instanceof TextInputLayout) {
+            final TextInputLayout p = (TextInputLayout) v.getParent();
+            p.setError(message);
+            p.postDelayed(new Runnable() {
+                @Override
+                public void run() { p.setError(null); }
+            }, 2000);
+        } else {
+            v.setError(message);
+            v.postDelayed(new Runnable() {
+                @Override
+                public void run() { v.setError(null); }
+            }, 2000);
+        }
     }
 
     protected void showView(@NonNull View v, boolean animate) {

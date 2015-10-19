@@ -24,6 +24,7 @@ import com.smurph.recyclerviewmultiselect.R;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -34,17 +35,27 @@ public class SimpleStringRecyclerViewAdapter
         extends MultiSelectAdapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
 
     private int mBackground;
-    private List<String> mValues;
+    private List<String> mValues = new ArrayList<>();
     private MultiSelectHelper mHelper;
+    private final Object mLock = new Object();
+
+    public interface AdapterListener {
+        void onCABMenuStart();
+        void onCABMenuFinish();
+        void updateTitleCount(int count);
+    }
+    private AdapterListener mAdapterListener;
 
     @Retention(RetentionPolicy.CLASS)
     @IntDef({HELPER_MULTI_WITH_CAB, HELPER_SINGLE_WITH_CAB,
-            HELPER_MULTI_WITHOUT_CAB, HELPER_SINGLE_WITHOUT_CAB})
+            HELPER_MULTI_WITHOUT_CAB, HELPER_SINGLE_WITHOUT_CAB,
+            HELPER_VIEWPAGER_CAB})
     public @interface HelperTypeDef{}
     public static final int HELPER_MULTI_WITH_CAB = 1;
     public static final int HELPER_SINGLE_WITH_CAB = 2;
     public static final int HELPER_MULTI_WITHOUT_CAB = 3;
     public static final int HELPER_SINGLE_WITHOUT_CAB = 4;
+    public static final int HELPER_VIEWPAGER_CAB = 5;
 
     public SimpleStringRecyclerViewAdapter(@NonNull Context context, @Nullable List<String> items,
                                            @HelperTypeDef int type) {
@@ -72,6 +83,10 @@ public class SimpleStringRecyclerViewAdapter
                 mHelper = new MultiSelectHelper(context)
                         .setActionModeEnabled(false);
                 break;
+            case HELPER_VIEWPAGER_CAB:
+                mHelper = new MultiSelectHelper(context);
+                mHelper.setActionModeCallback(mActionModeCallback);
+                break;
             default: break;
         }
         //NOTE: Examples to show setting selected color at runtime.
@@ -82,7 +97,7 @@ public class SimpleStringRecyclerViewAdapter
         TypedValue mTypedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mBackground = mTypedValue.resourceId;
-        mValues = items;
+        if (items!=null) { addAll(items, false); }
     }
 
     @Override
@@ -113,7 +128,34 @@ public class SimpleStringRecyclerViewAdapter
     @Override
     public int getItemCount() { return mValues.size(); }
 
-    public void remove(String s) { mValues.remove(s); }
+    public void addAll(@NonNull Collection<? extends String> items) { addAll(items, true); }
+
+    private void addAll(@NonNull Collection<? extends String> items, boolean notifyChange) {
+        synchronized (mLock) { mValues.addAll(items); }
+        if (notifyChange) { notifyDataSetChanged(); }
+    }
+
+    public void add(@NonNull String item, boolean notifyChange) {
+        synchronized (mLock) { mValues.add(item); }
+        int position = mValues.indexOf(item);
+        if (notifyChange) { notifyItemInserted(position); }
+    }
+
+    public void insert(@NonNull String item, int position, boolean notifyChange) {
+        synchronized (mLock) { mValues.add(position, item); }
+        if (notifyChange) { notifyItemInserted(position); }
+    }
+
+    public void remove(String item, boolean notifyChange) {
+        int position = mValues.indexOf(item);
+        synchronized (mLock) { mValues.remove(item); }
+        if (notifyChange) { notifyItemRemoved(position); }
+    }
+
+    public void clear(boolean notifyChange) {
+        synchronized (mLock) { mValues.clear(); }
+        if (notifyChange) { notifyDataSetChanged(); }
+    }
 
     public class ViewHolder extends MultiSelectViewHolder {
         public String mString;
@@ -130,6 +172,7 @@ public class SimpleStringRecyclerViewAdapter
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            if (mAdapterListener!=null) { mAdapterListener.onCABMenuStart(); }
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.cab_menu, menu);
             return true;
@@ -137,6 +180,11 @@ public class SimpleStringRecyclerViewAdapter
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            if (getContext()==null) { return false; }
+
+            mode.setTitle(getContext().getResources()
+                    .getQuantityString(R.plurals.selected_items,
+                            getSelectedCount(), getSelectedCount()));
             return false;
         }
 
@@ -152,7 +200,7 @@ public class SimpleStringRecyclerViewAdapter
                     for (Integer i : list) items.add(mValues.get(i)); ;
                     list.clear();
                     list = null;
-                    for (String s : items) { remove(s); }
+                    for (String s : items) { remove(s, false); }
                     notifyDataSetChanged();
                     mode.finish();
                     return true;
@@ -162,6 +210,11 @@ public class SimpleStringRecyclerViewAdapter
         }
 
         @Override
-        public void onDestroyActionMode(ActionMode mode) { mHelper.destroyActionMode(); }
+        public void onDestroyActionMode(ActionMode mode) {
+            if (mAdapterListener!=null) { mAdapterListener.onCABMenuFinish(); }
+            mHelper.destroyActionMode();
+        }
     };
+
+    public void setAdapterListener(AdapterListener l) { mAdapterListener = l; }
 }

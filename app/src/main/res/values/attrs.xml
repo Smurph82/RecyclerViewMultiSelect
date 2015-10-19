@@ -3,6 +3,9 @@
 
     <declare-styleable name="BaseTheme">
         <attr name="actionBarIconColor" format="color" />
+        <!-- If true pull-to-refresh is handle in the Fragment,
+        false it is handled in the Activity-->
+        <attr name="isFragmentRefresh" format="boolean"/>
     </declare-styleable>
 
 </resources>

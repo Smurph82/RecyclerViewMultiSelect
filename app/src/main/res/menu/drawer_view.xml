@@ -18,5 +18,9 @@
             android:id="@+id/nav_single_wo_cab"
             android:icon="@drawable/ic_dashboard"
             android:title="@string/nav_single_wo_cab"/>
+        <item
+            android:id="@+id/nav_viewpager_w_cab"
+            android:icon="@drawable/ic_dashboard"
+            android:title="@string/nav_viewpager_w_cab"/>
     </group>
 </menu>

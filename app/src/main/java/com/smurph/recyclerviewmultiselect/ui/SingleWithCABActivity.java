@@ -19,6 +19,7 @@ import com.smurph.multiselectlib.MultiSelectAdapter;
 import com.smurph.recyclerviewmultiselect.R;
 import com.smurph.recyclerviewmultiselect.ui.adapter.SimpleStringRecyclerViewAdapter;
 import com.smurph.recyclerviewmultiselect.ui.base.BaseActivity;
+import com.smurph.recyclerviewmultiselect.ui.widget.DividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,6 @@ import java.util.List;
  *
  */
 public class SingleWithCABActivity extends BaseActivity {
-
-    private List<String> mList;
-    {
-        mList = new ArrayList<>(25);
-        for (int i=0;i<25;i++) { mList.add(Integer.toString(i + 1)); }
-    }
 
     private RecyclerView mRecyclerView;
 
@@ -89,11 +84,15 @@ public class SingleWithCABActivity extends BaseActivity {
     }
 
     private void setupRecyclerView(@IdRes int id, @Nullable Bundle bundle) {
+        List<String> list = new ArrayList<>(25);
+        for (int i=0;i<25;i++) { list.add(Integer.toString(i + 1)); }
         mRecyclerView = (RecyclerView) findViewById(id);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.hasFixedSize();
-        mRecyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, mList,
+        mRecyclerView.setAdapter(new SimpleStringRecyclerViewAdapter(this, list,
                 SimpleStringRecyclerViewAdapter.HELPER_SINGLE_WITH_CAB));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL_LIST));
         ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
                 .setOnItemClickedListener(new MultiSelectAdapter.SimpleOnItemClickedListener() {
                     @Override
@@ -120,9 +119,9 @@ public class SingleWithCABActivity extends BaseActivity {
             public void run() {
                 ((SimpleStringRecyclerViewAdapter)mRecyclerView.getAdapter())
                         .setIsClickingEnabled(true);
-                setRefreshingEnabled(false);
+                setRefreshingEnabled(true);
                 setRefreshing(false);
             }
-        }, 5000L);
+        }, 3000L);
     }
 }
