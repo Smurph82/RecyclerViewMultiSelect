@@ -28,6 +28,7 @@ dependencies {
 * ~~Single select mode w/o CAB.~~
 
 ##### KNOWN ISSUES
+* With the ViewPager example if there are not enough items to fill the screen the swipe to refresh and the Collapsing Toolbar do not work all the time. This is an issue with the Collapsing Toolbar Android support library and not the MultiSelectHelper library.
 * ~~Under version 1.0.5 removing an item from the RecyclerView will throw off the positioning of this library. I look to have a fix in version 1.0.6~~
 * ~~Under version 1.0.5 there is not direct way of getting the selected item count. Should be in version 1.0.6~~
 
