@@ -12,7 +12,7 @@ buildscript {
 ```
 
 ```
-dependencies {
+dependencies {te
     ...
     compile 'com.smurph.multiselectlib:multiselectlib:1.0.9'
 }
