@@ -97,10 +97,10 @@ public class MultiSelectHelper {
      * This results in everything being unselected.
      */
     public void forceFinishActionMode() {
-        if (!isSelectionMode()) { return; }
-        ArrayList<Integer> selectedPositions = getSelectedPositions();
-        mIsSelected.clear();
-        if (mListener!=null) { for (Integer i : selectedPositions) { mListener.itemChangedAt(i); } }
+//        if (!isSelectionMode()) { return; }
+//        ArrayList<Integer> selectedPositions = getSelectedPositions();
+//        mIsSelected.clear();
+//        if (mListener!=null) { for (Integer i : selectedPositions) { mListener.itemChangedAt(i); } }
         if (mActionMode!=null) { mActionMode.finish(); }
     }
 
